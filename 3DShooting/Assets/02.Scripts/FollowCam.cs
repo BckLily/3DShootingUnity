@@ -29,8 +29,8 @@ public class FollowCam : MonoBehaviour
     Transform camTr;
     // 카메라의 상대적 위치
     [SerializeField]
-    Vector3 camPos;
-    // 
+    Vector3 camPos = new Vector3(0f, 0f, 0f);
+    // 카메라가 플레이어의 위치보다 조금 더 앞을 보게 만든다.
 
     float camSpeed = 5f;
 
@@ -38,6 +38,9 @@ public class FollowCam : MonoBehaviour
     // 플레이어의 높이보다 항상 20f 높다.
     float camHeight = 20f;
     // cameraBox가 보게될 방향 (플레이어 위치 + 높이20)
+
+
+    Vector3 offset;
 
 
     // Start is called before the first frame update
@@ -51,40 +54,50 @@ public class FollowCam : MonoBehaviour
         // 플레이어를 가져오는게 오류가 발생하지 않으려면 좋을 듯.
         playerTr = GameObject.FindGameObjectWithTag("PLAYER").GetComponent<Transform>();
 
-        camRot = Quaternion.Euler(new Vector3(60, 45, 0));
+        //camRot = Quaternion.Euler(new Vector3(60, 45, 0));
 
         //camTr = transform.parent.GetComponent<Transform>();
         transform.rotation = camRot;
-        camPos = new Vector3(-10f, 9f, -10f);
+        offset = new Vector3(-6f, 3f, -6f);
+        camPos = new Vector3(0f, 3f, 0f);
+        //transform.position = playerTr.position + offset;
+        //transform.LookAt(playerTr);
 
     }
 
     // Update is called once per frame
     void Update()
-    {
-        
+    {        
+        // text Code
+        if (Input.GetKey(KeyCode.Q))
+        {
+            transform.RotateAround(playerTr.position, Vector3.up, 1f);
+
+            offset = transform.position - playerTr.position;
+            offset.Normalize();
+
+            //transform.Rotate(transform.position, 1f);
+            // Rotate >> 회전
+            //cameraMove.z += transform.localPosition.z;
+            //cameraMove.x += transform.localPosition.x;
+        }
+        else if (Input.GetKey(KeyCode.E))
+        {
+            transform.RotateAround(playerTr.position, Vector3.up, -1f);
+
+            offset = transform.position - playerTr.position;
+            offset.Normalize();
+
+            //transform.Rotate(transform.position, -1f);
+            //cameraMove.z -= transform.localPosition.z;
+            //cameraMove.x = transform.localPosition.x;
+        }
+
     }
 
     private void LateUpdate()
     {
-        //var cameraMove = Vector3.zero;
-
-        //// text Code
-        //if (Input.GetKey(KeyCode.Q))
-        //{
-        //    //transform.RotateAround(transform.position, transform.up, 1f);
-        //    //transform.Rotate(transform.position, 1f);
-        //    // Rotate >> 회전
-        //    //cameraMove.z += transform.localPosition.z;
-        //    cameraMove.x += transform.localPosition.x;
-        //}
-        //else if (Input.GetKey(KeyCode.E))
-        //{
-        //    //transform.RotateAround(transform.position, -transform.up , 1f);
-        //    //transform.Rotate(transform.position, -1f);
-        //    //cameraMove.z -= transform.localPosition.z;
-        //    cameraMove.x = transform.localPosition.x;
-        //}
+        var cameraMove = Vector3.zero;
 
         //camPos += cameraMove.normalized * Time.deltaTime * camSpeed;
         //camPos = camPos.normalized;
@@ -92,10 +105,18 @@ public class FollowCam : MonoBehaviour
 
 
         // use Code
+        // Test Code
+        transform.position = playerTr.position + offset * 2f;
+        //transform.position = playerTr.position + camPos;
 
-        transform.position = playerTr.position + camPos;
+        Vector3 lookVector = new Vector3(playerTr.position.x + camPos.x, playerTr.position.y + camPos.y, playerTr.position.z + camPos.z);
 
-        transform.LookAt(playerTr);
+        transform.LookAt(lookVector);
+        Debug.Log("lookVector: " + lookVector);
+        //Debug.Log("position: " + lookVector.position);
+        Debug.Log("playerTr: " + playerTr);
+        Debug.Log("position: " + playerTr.position);
+
 
 
 

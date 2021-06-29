@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class PlayerCtrl : MonoBehaviour
 {
+    // 플레이어를 따라올 카메라.
     public Camera camera;
+    // 카메라의 Transform
+    Transform cameraTr;
 
     // Player의 Transform을 저장할 변수
     private Transform tr;
@@ -34,6 +37,8 @@ public class PlayerCtrl : MonoBehaviour
     {
         tr = this.GetComponent<Transform>();
         camera = GameObject.Find("MainCamera").GetComponent<Camera>();
+
+        cameraTr = camera.gameObject.GetComponent<Transform>();
 
         weaponPos = tr.Find("PlayerCapsule").Find("WeaponPos").GetComponent<Transform>();
         Instantiate(weapon, weaponPos);
@@ -81,6 +86,21 @@ public class PlayerCtrl : MonoBehaviour
 
     }
 
+    /*
+     * 플레이어의 이동이지만 잘 생각해보면 사실 카메라가 어디를 보고 있느냐에 따라
+     * 정면이 달라진다.
+     * 
+     * 탑 뷰, 탑 다운의 경우 정면은 위쪽 방향이 될 것이고
+     * 쿼터뷰의 경우 정면은 카메라가 보고 있는 대각선 방향이 될 것이다.
+     * 숄더뷰의 경우도 플레이어와 카메라가 보통 같은 방향을 보고 있기 때문에
+     * 정면은 카메라가 보고 있는 방향이 될 것이다.
+     * 
+     * 단, 카메라의 회전이 가능한 경우,
+     * 이동 전의 카메라의 Rotation을 저장해두고 그 Rotation 값에 대해서
+     * 플레이어의 정면이동을 해야할 것이다.
+     * 이후 카메라 회전이 끝나면 저장해둔 값으로 다시 복구 시켜야 한다.
+     * 
+     */
 
     IEnumerator KeyBoardControl()
     {
@@ -90,23 +110,23 @@ public class PlayerCtrl : MonoBehaviour
 
         if (Input.GetKey(KeyCode.W))
         {
-            movement += transform.forward;
+            movement += Vector3.forward;
         }
         else if (Input.GetKey(KeyCode.S))
         {
-            movement.z -= transform.position.z;
+            movement += Vector3.back;
         }
 
         if (Input.GetKey(KeyCode.A))
         {
-            movement.x += transform.position.x;
+            movement += Vector3.left;
         }
         else if (Input.GetKey(KeyCode.D))
         {
-            movement.x -= transform.position.x;
+            movement += Vector3.right;
         }
 
-        tr.position += movement.normalized * Time.deltaTime * moveSpeed;
+        tr.Translate( movement * Time.deltaTime * moveSpeed);
 
 
 
