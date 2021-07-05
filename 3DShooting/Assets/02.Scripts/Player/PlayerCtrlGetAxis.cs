@@ -52,15 +52,16 @@ public class PlayerCtrlGetAxis : MonoBehaviour
         //Vector3 moveDir = (Vector3.forward * vertical) + (Vector3.right * horizontal);
 
 
-        bool sphereCast = Physics.SphereCast(center, 0.35f, moveDir, out hit, 1 << 7);
-
+        var sphereCast = Physics.SphereCastAll(center, 0.35f, Vector3.up, 0f, 1 << 7);
+        //Physics.SphereCast(center, 0.35f, Vector3.up, 0, 1<<7);
 
         if (moveDir == Vector3.zero)
         {
             canMove = false;
         }
-        else if(moveDir != Vector3.zero && sphereCast == true)
+        else if(moveDir != Vector3.zero && sphereCast == null) // movdDir != 000 , 움직이려고 하고 있을 때, sphereCast == null, 충돌체가 없는 경우
         {
+            // 이동할 수 있게 해준다.
             canMove = true;
         }
 
